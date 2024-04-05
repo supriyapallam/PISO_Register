@@ -1,0 +1,39 @@
+//Design Code
+module piso_reg(output reg out,input clk,d1,d2,d3,d4,s0barpi);
+  reg q1,q2,q3;
+  always@(posedge clk)
+    begin
+      q1<=d1;
+      q2<=s0barpi? d2:q1;
+      q3<=s0barpi? d3:q2;
+      out<=s0barpi?d4:q3;
+    end
+endmodule
+
+//Test Bench Code
+module tb();
+  reg d1,d2,d3,d4;
+  reg clk,s0barpi;
+  wire out;
+  piso_reg DUT(out,clk,d1,d2,d3,d4,s0barpi);
+  initial
+    begin
+      clk=1'b0;
+      forever #5 clk=~clk;
+    end
+  initial
+    begin
+      @(negedge clk) d1=1'b1;d2=1'b0;d3=1'b1;d4=1'b0;s0barpi=1'b1;
+      @(negedge clk) d1=1'b1;d2=1'b1;d3=1'b0;d4=1'b1;s0barpi=1'b0;
+      @(negedge clk) d1=1'b1;d2=1'b1;d3=1'b1;d4=1'b0;s0barpi=1'b0;
+      @(negedge clk) d1=1'b1;d2=1'b1;d3=1'b1;d4=1'b1;s0barpi=1'b0;
+      @(negedge clk);
+      $finish;
+    end
+  initial
+    begin
+      $dumpfile("test.vcd");
+      $dumpvars(1);
+    end
+endmodule
+
